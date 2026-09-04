@@ -10,27 +10,28 @@ import { ChipRow, EmptyState } from "@/src/components/ui";
 import { Icon } from "@/src/components/Icon";
 import { makeStyles, useTheme } from "@/src/theme";
 import { fonts, radius, spacing } from "@/src/lib/typography";
-import { culinaryData, foodCategories, Dish } from "@/src/lib/culinary";
-import { foodImage } from "@/src/lib/images";
+import { culinaryData } from "@/src/lib/culinary";
+import { useDishes, foodCategories, MergedDish } from "@/src/lib/dishes";
 import { useFavorites } from "@/src/lib/favorites";
 
 export default function FoodList() {
   const s = useStyles();
   const { colors } = useTheme();
   const { favorites, toggle, isFav } = useFavorites();
+  const dishes = useDishes();
   const [cat, setCat] = useState("All");
   const [favOnly, setFavOnly] = useState(false);
 
   const chips = foodCategories.map((c) => ({ key: c, label: c === "All" ? "Tutte" : c }));
 
   const filtered = useMemo(() => {
-    let list = culinaryData;
+    let list = dishes.data ?? [];
     if (favOnly) list = list.filter((d) => favorites.includes(d.id));
     if (cat !== "All") list = list.filter((d) => d.category === cat);
     return list;
-  }, [cat, favOnly, favorites]);
+  }, [cat, favOnly, favorites, dishes.data]);
 
-  const renderItem = ({ item, index }: { item: Dish; index: number }) => {
+  const renderItem = ({ item, index }: { item: MergedDish; index: number }) => {
     const fav = isFav(item.id);
     return (
       <Animated.View entering={FadeInDown.delay((index % 8) * 40)} style={s.cell}>
@@ -40,9 +41,15 @@ export default function FoodList() {
           onPress={() => router.push({ pathname: "/food/[id]", params: { id: item.id } })}
         >
           <View style={s.glyphWrap}>
-            <Image source={{ uri: foodImage(item.id, 400, 300) }} style={s.thumbImg} contentFit="cover" transition={250} />
-            <LinearGradient colors={["transparent", "rgba(44,42,40,0.35)"]} style={s.thumbShade} />
-            <Text style={s.glyphBadge}>{item.icon}</Text>
+            {item.image ? (
+              <>
+                <Image source={{ uri: item.image }} style={s.thumbImg} contentFit="cover" transition={200} />
+                <LinearGradient colors={["transparent", "rgba(44,42,40,0.35)"]} style={s.thumbShade} />
+                <Text style={s.glyphBadge}>{item.icon}</Text>
+              </>
+            ) : (
+              <Text style={s.glyph}>{item.icon}</Text>
+            )}
             <Pressable
               testID={`fav-${item.id}`}
               onPress={() => toggle(item.id)}
@@ -125,10 +132,11 @@ const useStyles = makeStyles((c) => ({
   coverSub: { color: "rgba(255,255,255,0.9)", fontSize: 13, lineHeight: 19, fontFamily: fonts.body },
   cell: { flex: 1 },
   card: { flex: 1, backgroundColor: c.surfaceSecondary, borderRadius: radius.lg, padding: spacing.md, borderWidth: 1, borderColor: c.border, gap: 6 },
-  glyphWrap: { height: 110, backgroundColor: c.surfaceTertiary, borderRadius: radius.md, overflow: "hidden", justifyContent: "flex-end" },
+  glyphWrap: { height: 110, backgroundColor: c.surfaceTertiary, borderRadius: radius.md, overflow: "hidden", alignItems: "center", justifyContent: "center" },
+  glyph: { fontSize: 44 },
   thumbImg: { ...({ position: "absolute", top: 0, left: 0, right: 0, bottom: 0 } as const) },
   thumbShade: { position: "absolute", left: 0, right: 0, bottom: 0, height: 50 },
-  glyphBadge: { fontSize: 22, margin: 6 },
+  glyphBadge: { position: "absolute", left: 6, bottom: 6, fontSize: 22 },
   heart: { position: "absolute", top: 6, right: 6, width: 30, height: 30, borderRadius: radius.pill, backgroundColor: c.surfaceSecondary, alignItems: "center", justifyContent: "center" },
   name: { color: c.onSurface, fontSize: 15, fontFamily: fonts.heading, lineHeight: 18, marginTop: 2 },
   regionRow: { flexDirection: "row", alignItems: "center", gap: 3 },

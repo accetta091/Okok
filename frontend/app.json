@@ -9,7 +9,10 @@
     "userInterfaceStyle": "automatic",
     "ios": {
       "supportsTablet": true,
-      "bundleIdentifier": "com.emergent.traapclone.njtaiv"
+      "bundleIdentifier": "com.emergent.traapclone.njtaiv",
+      "infoPlist": {
+        "NSPhotoLibraryUsageDescription": "Scegli una foto per i piatti della guida"
+      }
     },
     "android": {
       "adaptiveIcon": {

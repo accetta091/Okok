@@ -5332,6 +5332,58 @@ async def mkt_calendar(body: MktCalendarIn, _: str = Depends(get_current_admin))
 
 
 # ============================================================
+# Cucina Siciliana — override piatti (admin)
+# I default statici vivono nel frontend; qui salviamo solo le modifiche
+# dell'admin (per id) e gli eventuali piatti custom aggiunti.
+# ============================================================
+class DishIn(BaseModel):
+    name: Optional[str] = None
+    region: Optional[str] = None
+    category: Optional[str] = None
+    icon: Optional[str] = None
+    description: Optional[str] = None
+    ingredients: Optional[List[str]] = None
+    funFact: Optional[str] = None
+    image: Optional[str] = None
+    hidden: Optional[bool] = None
+    custom: Optional[bool] = None
+
+
+@api.get("/dishes/overrides")
+async def list_dish_overrides():
+    docs = await db.dish_overrides.find({}, {"_id": 0}).to_list(1000)
+    return docs
+
+
+@api.put("/dishes/{dish_id}")
+async def upsert_dish(dish_id: str, body: DishIn, _: str = Depends(get_current_admin)):
+    payload = {k: v for k, v in body.model_dump().items() if v is not None}
+    payload["id"] = dish_id
+    payload["updated_at"] = datetime.now(timezone.utc).isoformat()
+    await db.dish_overrides.update_one({"id": dish_id}, {"$set": payload}, upsert=True)
+    doc = await db.dish_overrides.find_one({"id": dish_id}, {"_id": 0})
+    return doc
+
+
+@api.post("/dishes")
+async def create_dish(body: DishIn, _: str = Depends(get_current_admin)):
+    dish_id = "custom-" + uuid.uuid4().hex[:10]
+    payload = {k: v for k, v in body.model_dump().items() if v is not None}
+    payload["id"] = dish_id
+    payload["custom"] = True
+    payload["updated_at"] = datetime.now(timezone.utc).isoformat()
+    await db.dish_overrides.insert_one(dict(payload))
+    return {"id": dish_id}
+
+
+@api.delete("/dishes/{dish_id}")
+async def reset_dish(dish_id: str, _: str = Depends(get_current_admin)):
+    await db.dish_overrides.delete_one({"id": dish_id})
+    return {"ok": True}
+
+
+
+# ============================================================
 # Mount router + CORS
 # ============================================================
 app.include_router(api)

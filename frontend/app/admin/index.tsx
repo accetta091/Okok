@@ -41,6 +41,7 @@ export default function AdminDashboard() {
   const tiles: { icon: IconName; label: string; desc: string; route: string }[] = [
     { icon: "calendar-multiple-check", label: "Prenotazioni", desc: "Approva o rifiuta richieste", route: "/admin/bookings" },
     { icon: "cash-multiple", label: "Prezzi & Calendario", desc: "Tariffe e disponibilità", route: "/admin/prices" },
+    { icon: "silverware-fork-knife", label: "Cucina Siciliana", desc: "Modifica foto, ingredienti, curiosità", route: "/admin/food" },
     { icon: "map-marker-multiple", label: "Luoghi (POI)", desc: "Catalogo attrazioni", route: "/(guest)/places" },
     { icon: "robot-happy-outline", label: "Carmelo IA", desc: "Assistente itinerari", route: "/(guest)/itineraries" },
   ];

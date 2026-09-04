@@ -10,7 +10,7 @@ import { Icon } from "@/src/components/Icon";
 import { makeStyles, useTheme } from "@/src/theme";
 import { fonts, radius, spacing } from "@/src/lib/typography";
 import { culinaryData } from "@/src/lib/culinary";
-import { foodImage } from "@/src/lib/images";
+import { useDishes } from "@/src/lib/dishes";
 import { useFavorites } from "@/src/lib/favorites";
 
 export default function FoodDetail() {
@@ -18,7 +18,8 @@ export default function FoodDetail() {
   const s = useStyles();
   const { colors } = useTheme();
   const { isFav, toggle } = useFavorites();
-  const dish = culinaryData.find((d) => d.id === id);
+  const dishes = useDishes();
+  const dish = (dishes.data ?? culinaryData).find((d) => d.id === id);
 
   if (!dish) {
     return (
@@ -50,8 +51,14 @@ export default function FoodDetail() {
       />
       <ScrollView contentContainerStyle={{ paddingBottom: spacing.xxl }} showsVerticalScrollIndicator={false}>
         <View style={s.hero}>
-          <Image source={{ uri: foodImage(dish.id, 800, 500) }} style={s.heroBg} contentFit="cover" transition={250} />
-          <LinearGradient colors={["rgba(44,42,40,0.15)", "rgba(44,42,40,0.55)"]} style={s.heroBg} />
+          {dish.image ? (
+            <>
+              <Image source={{ uri: dish.image }} style={s.heroBg} contentFit="cover" transition={250} />
+              <LinearGradient colors={["rgba(44,42,40,0.15)", "rgba(44,42,40,0.55)"]} style={s.heroBg} />
+            </>
+          ) : (
+            <LinearGradient colors={[colors.brandPrimary, colors.olive]} style={s.heroBg} />
+          )}
           <Text style={s.glyph}>{dish.icon}</Text>
         </View>
 
