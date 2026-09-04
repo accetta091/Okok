@@ -16,7 +16,9 @@ Scelte utente: Ospite + Admin completo, tutte le funzioni, Emergent LLM Key, mul
 - Carmelo IA: chat streaming (SSE) con Emergent LLM Key.
 - Info/FAQ: FAQ, invio domanda ospite, contatti, accesso admin.
 - Admin: login JWT, dashboard con statistiche, gestione prenotazioni (approva/rifiuta), prezzi & calendario.
-- **Cucina Siciliana** (2026-06): 64 specialità (Palermo & Trapani), indice con filtro per zona, schede dettaglio (descrizione, ingredienti, curiosità), preferiti persistiti sul dispositivo.
+- **Cucina Siciliana** (2026-06): 64 specialità (Palermo & Trapani), indice con filtro per zona, schede dettaglio (descrizione, ingredienti, curiosità), preferiti persistiti sul dispositivo. **Foto reali** dei piatti (LoremFlickr, stabili per piatto) con emoji come badge.
+- **Spiagge · Bussola dei venti** (2026-06): meteo live (Open-Meteo: temp/vento/UV/tramonto), consigli dinamici in base al vento (costa Nord/Sud), 40+ spiagge PA/TP con stato IDEALE/MOSSO, filtri (bambini, attrezzate, snorkel, parcheggio, gratis), ricerca, info parcheggio/affluenza/fondale, "Portami lì" (Google Maps). Bilingue IT/EN.
+- **Feste & Sagre** (2026-06): eventi ufficiali PA/TP con date 2026 verificate (San Giuseppe 19/3, Misteri Trapani 3-4/4, Ballo dei Diavoli Prizzi 5/4, Sagra Carciofo Cerda 23-26/4, San Vito 15/6, Festino Santa Rosalia 14-15/7, Acchianata 3-4/9, Cous Cous Fest 18-27/9, Santa Lucia 13/12, Presepe Vivente Custonaci). Marcatori sul calendario di prenotazione + prossime feste in Home.
 
 ## Credenziali
 - Admin: admin / TraapAdmin2026! (vedi test_credentials.md)

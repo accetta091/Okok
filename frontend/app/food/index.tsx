@@ -1,5 +1,6 @@
 import React, { useMemo, useState } from "react";
 import { View, Text, Pressable, FlatList } from "react-native";
+import { Image } from "expo-image";
 import { LinearGradient } from "expo-linear-gradient";
 import { router } from "expo-router";
 import Animated, { FadeInDown } from "react-native-reanimated";
@@ -10,6 +11,7 @@ import { Icon } from "@/src/components/Icon";
 import { makeStyles, useTheme } from "@/src/theme";
 import { fonts, radius, spacing } from "@/src/lib/typography";
 import { culinaryData, foodCategories, Dish } from "@/src/lib/culinary";
+import { foodImage } from "@/src/lib/images";
 import { useFavorites } from "@/src/lib/favorites";
 
 export default function FoodList() {
@@ -38,7 +40,9 @@ export default function FoodList() {
           onPress={() => router.push({ pathname: "/food/[id]", params: { id: item.id } })}
         >
           <View style={s.glyphWrap}>
-            <Text style={s.glyph}>{item.icon}</Text>
+            <Image source={{ uri: foodImage(item.id, 400, 300) }} style={s.thumbImg} contentFit="cover" transition={250} />
+            <LinearGradient colors={["transparent", "rgba(44,42,40,0.35)"]} style={s.thumbShade} />
+            <Text style={s.glyphBadge}>{item.icon}</Text>
             <Pressable
               testID={`fav-${item.id}`}
               onPress={() => toggle(item.id)}
@@ -121,8 +125,10 @@ const useStyles = makeStyles((c) => ({
   coverSub: { color: "rgba(255,255,255,0.9)", fontSize: 13, lineHeight: 19, fontFamily: fonts.body },
   cell: { flex: 1 },
   card: { flex: 1, backgroundColor: c.surfaceSecondary, borderRadius: radius.lg, padding: spacing.md, borderWidth: 1, borderColor: c.border, gap: 6 },
-  glyphWrap: { alignItems: "center", justifyContent: "center", height: 72, backgroundColor: c.surfaceTertiary, borderRadius: radius.md },
-  glyph: { fontSize: 40 },
+  glyphWrap: { height: 110, backgroundColor: c.surfaceTertiary, borderRadius: radius.md, overflow: "hidden", justifyContent: "flex-end" },
+  thumbImg: { ...({ position: "absolute", top: 0, left: 0, right: 0, bottom: 0 } as const) },
+  thumbShade: { position: "absolute", left: 0, right: 0, bottom: 0, height: 50 },
+  glyphBadge: { fontSize: 22, margin: 6 },
   heart: { position: "absolute", top: 6, right: 6, width: 30, height: 30, borderRadius: radius.pill, backgroundColor: c.surfaceSecondary, alignItems: "center", justifyContent: "center" },
   name: { color: c.onSurface, fontSize: 15, fontFamily: fonts.heading, lineHeight: 18, marginTop: 2 },
   regionRow: { flexDirection: "row", alignItems: "center", gap: 3 },

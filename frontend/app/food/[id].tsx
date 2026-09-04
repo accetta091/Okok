@@ -1,5 +1,6 @@
 import React from "react";
 import { ScrollView, View, Text, Pressable } from "react-native";
+import { Image } from "expo-image";
 import { LinearGradient } from "expo-linear-gradient";
 import { useLocalSearchParams } from "expo-router";
 
@@ -9,6 +10,7 @@ import { Icon } from "@/src/components/Icon";
 import { makeStyles, useTheme } from "@/src/theme";
 import { fonts, radius, spacing } from "@/src/lib/typography";
 import { culinaryData } from "@/src/lib/culinary";
+import { foodImage } from "@/src/lib/images";
 import { useFavorites } from "@/src/lib/favorites";
 
 export default function FoodDetail() {
@@ -48,7 +50,8 @@ export default function FoodDetail() {
       />
       <ScrollView contentContainerStyle={{ paddingBottom: spacing.xxl }} showsVerticalScrollIndicator={false}>
         <View style={s.hero}>
-          <LinearGradient colors={[colors.brandPrimary, colors.olive]} style={s.heroBg} />
+          <Image source={{ uri: foodImage(dish.id, 800, 500) }} style={s.heroBg} contentFit="cover" transition={250} />
+          <LinearGradient colors={["rgba(44,42,40,0.15)", "rgba(44,42,40,0.55)"]} style={s.heroBg} />
           <Text style={s.glyph}>{dish.icon}</Text>
         </View>
 
@@ -96,9 +99,9 @@ export default function FoodDetail() {
 const useStyles = makeStyles((c) => ({
   screen: { flex: 1, backgroundColor: c.surface },
   heart: { width: 40, height: 40, borderRadius: radius.pill, backgroundColor: c.surfaceTertiary, alignItems: "center", justifyContent: "center", borderWidth: 1, borderColor: c.border },
-  hero: { height: 180, alignItems: "center", justifyContent: "center" },
+  hero: { height: 200, justifyContent: "flex-end", alignItems: "flex-start", padding: spacing.md },
   heroBg: { position: "absolute", top: 0, left: 0, right: 0, bottom: 0 },
-  glyph: { fontSize: 90 },
+  glyph: { fontSize: 30, width: 56, height: 56, borderRadius: 28, textAlign: "center", lineHeight: 54, overflow: "hidden", backgroundColor: "rgba(255,255,255,0.92)" },
   body: { padding: spacing.md, marginTop: -spacing.lg },
   regionBadge: { flexDirection: "row", alignItems: "center", gap: 4, alignSelf: "flex-start", backgroundColor: c.brandPrimary, paddingHorizontal: 12, paddingVertical: 6, borderRadius: radius.pill },
   regionTxt: { color: c.onBrandPrimary, fontSize: 12, fontWeight: "700", fontFamily: fonts.body },

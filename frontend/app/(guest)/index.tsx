@@ -14,6 +14,7 @@ import { Icon, IconName } from "@/src/components/Icon";
 import { makeStyles, useTheme } from "@/src/theme";
 import { fonts, radius, spacing } from "@/src/lib/typography";
 import { useProperty, usePhotos, useAvailability } from "@/src/lib/queries";
+import { festivalDateSet, upcomingFestivals } from "@/src/lib/festivals";
 import { euro, toISODate, nightsBetween } from "@/src/lib/format";
 
 const HERO_IMG =
@@ -64,6 +65,20 @@ export default function HomeScreen() {
     }
     return marks;
   }, [blocked, range, colors]);
+
+  const festMap = useMemo(() => festivalDateSet(), []);
+  const markedWithFestivals = useMemo(() => {
+    const marks = { ...markedDates };
+    Object.keys(festMap).forEach((iso) => {
+      const existing = marks[iso];
+      if (!existing || (!existing.color && !existing.disabled)) {
+        marks[iso] = { ...(existing || {}), marked: true, dotColor: colors.olive };
+      }
+    });
+    return marks;
+  }, [markedDates, festMap, colors]);
+
+  const nextFestivals = useMemo(() => upcomingFestivals().slice(0, 3), []);
 
   const onDayPress = (day: { dateString: string }) => {
     const d = day.dateString;
@@ -198,7 +213,7 @@ export default function HomeScreen() {
               <Calendar
                 testID="availability-calendar"
                 markingType="period"
-                markedDates={markedDates}
+                markedDates={markedWithFestivals}
                 onDayPress={onDayPress}
                 minDate={toISODate(new Date())}
                 theme={{
@@ -217,8 +232,39 @@ export default function HomeScreen() {
               <View style={s.legend}>
                 <Legend color={colors.brandPrimary} label={t("calendar.selected")} />
                 <Legend color={colors.error} label={t("calendar.booked")} />
+                <Legend color={colors.olive} label="Feste & Sagre" />
               </View>
             </Card>
+
+            {/* Feste nel periodo */}
+            <View style={{ marginTop: spacing.md, gap: spacing.sm }}>
+              {nextFestivals.map((f) => (
+                <Pressable key={f.id} testID={`home-fest-${f.id}`} onPress={() => router.push("/festivals")}>
+                  <View style={s.festRow}>
+                    <Text style={s.festGlyph}>{f.icon}</Text>
+                    <View style={{ flex: 1 }}>
+                      <Text style={s.festName} numberOfLines={1}>{f.name}</Text>
+                      <Text style={s.festMeta} numberOfLines={1}>{f.dateLabel} · {f.place}</Text>
+                    </View>
+                    <Icon name="chevron-right" size={20} color={colors.muted} />
+                  </View>
+                </Pressable>
+              ))}
+            </View>
+          </View>
+
+          {/* Spiagge + Feste CTAs */}
+          <View style={[s.section, { flexDirection: "row", gap: spacing.sm }]}>
+            <Pressable testID="home-beaches-cta" style={s.miniCta} onPress={() => router.push("/beaches")}>
+              <Icon name="beach" size={26} color={colors.info} />
+              <Text style={s.miniCtaTitle}>Spiagge</Text>
+              <Text style={s.miniCtaSub}>Bussola dei venti live</Text>
+            </Pressable>
+            <Pressable testID="home-festivals-cta" style={s.miniCta} onPress={() => router.push("/festivals")}>
+              <Icon name="calendar-star" size={26} color={colors.brand} />
+              <Text style={s.miniCtaTitle}>Feste & Sagre</Text>
+              <Text style={s.miniCtaSub}>Eventi del territorio</Text>
+            </Pressable>
           </View>
 
           {/* Food CTA */}
@@ -320,6 +366,13 @@ const useStyles = makeStyles((c) => ({
   foodKicker: { color: "rgba(255,255,255,0.85)", fontSize: 10, letterSpacing: 2, fontFamily: fonts.body },
   foodTitle: { color: "#fff", fontSize: 19, fontFamily: fonts.heading, marginTop: 2 },
   foodSub: { color: "rgba(255,255,255,0.85)", fontSize: 12, fontFamily: fonts.body, marginTop: 2 },
+  festRow: { flexDirection: "row", alignItems: "center", gap: spacing.sm, backgroundColor: c.surfaceSecondary, borderRadius: radius.md, borderWidth: 1, borderColor: c.border, padding: spacing.sm },
+  festGlyph: { fontSize: 24, width: 40, height: 40, textAlign: "center", lineHeight: 40, backgroundColor: c.surfaceTertiary, borderRadius: radius.sm, overflow: "hidden" },
+  festName: { color: c.onSurface, fontSize: 14, fontFamily: fonts.heading },
+  festMeta: { color: c.muted, fontSize: 12, fontFamily: fonts.body, marginTop: 1 },
+  miniCta: { flex: 1, backgroundColor: c.surfaceSecondary, borderRadius: radius.lg, borderWidth: 1, borderColor: c.border, padding: spacing.md, gap: 4 },
+  miniCtaTitle: { color: c.onSurface, fontSize: 16, fontFamily: fonts.heading, marginTop: 4 },
+  miniCtaSub: { color: c.muted, fontSize: 12, fontFamily: fonts.body },
   mapCtaOverlay: { position: "absolute", top: 0, left: 0, right: 0, bottom: 0 },
   mapCtaContent: { position: "absolute", left: spacing.md, right: spacing.md, bottom: spacing.md, gap: spacing.sm },
   mapCtaKicker: { color: "rgba(255,255,255,0.85)", fontSize: 10, letterSpacing: 2, fontFamily: fonts.body },
